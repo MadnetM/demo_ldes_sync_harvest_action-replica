@@ -1,26 +1,32 @@
-name: LDES_sync_download
-
-on:
-  push:
-    branches: [main]
-
 jobs:
   sync_download_ldes:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: make ldes hash file if not exists
-        run: |
-          if [ ! -f .github/ldes_sync_harvest ]; then
-              git rev-parse HEAD > .github/last_ldes_hash
-          fi
-      - name: LDES harvest_sync
-        uses: cedricdcc/ldes-sync-harvest-action@latest
-      - name: Commit and push changes to main branch
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git add .
-          git commit -m "Update LDES files"
-          git push
+    - name: Collect Workflow Telemetry
+      uses: Nfsaavedra/workflow-telemetry-action@raw_data
+      with:
+        save_raw_stats: true
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: make ldes hash file if not exists
+      run: "if [ ! -f .github/ldes_sync_harvest ]; then\n    git rev-parse HEAD >\
+        \ .github/last_ldes_hash\nfi\n"
+    - name: LDES harvest_sync
+      uses: cedricdcc/ldes-sync-harvest-action@latest
+    - name: Commit and push changes to main branch
+      run: 'git config --global user.name ''GitHub Actions''
+
+        git config --global user.email ''actions@github.com''
+
+        git add .
+
+        git commit -m "Update LDES files"
+
+        git push
+
+        '
+name: LDES_sync_download
+'on':
+- workflow_dispatch
+permissions: write-all
